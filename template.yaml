@@ -8,6 +8,12 @@ Parameters:
   CodeCommitRepositoryName:
     Description: Name of the CodeCommit repository housing the code (in master branch)
     Type: String
+  DevelopmentEnvironmentBucket:
+    Description: Bucket name to store development frontend application artifacts
+    Type: String   
+  ProductionEnvironmentBucket:
+    Description: Bucket name to store production frontend application artifacts
+    Type: String     
   ApiDomain:
     Description: Domain name of backend API
     Type: String
@@ -16,16 +22,16 @@ Parameters:
     Type: String
 
 Resources:
-  HvgnBackendPipeline:
+  HvgnFrontendPipeline:
     Type: AWS::CodePipeline::Pipeline
     Properties:
-      Name: hvgn-backend-pipeline
+      Name: hvgn-frontend-pipeline
       ArtifactStore:
         Type: S3
         Location: !Ref PipelineArtifactsBucket
       RestartExecutionOnUpdate: false
       RoleArn: !GetAtt 
-        - HvgnBackendPipelineServiceRole
+        - HvgnFrontendPipelineServiceRole
         - Arn
       Stages:
         - Name: Source
@@ -58,12 +64,12 @@ Resources:
                 - Name: BuildArtifact
               Namespace: BuildVariables
               Configuration:
-                ProjectName: hvgn-backend
+                ProjectName: hvgn-frontend
                 PrimarySource: SourceArtifact
               RunOrder: 1
-        - Name: hvgn-backend-dev-deploy
+        - Name: hvgn-frontend-dev-deploy
           Actions:
-            - Name: hvgn-backend-dev-deploy
+            - Name: hvgn-frontend-dev-deploy
               ActionTypeId:
                 Category: Build
                 Owner: AWS
@@ -72,9 +78,11 @@ Resources:
               InputArtifacts:
                 - Name: BuildArtifact
               Configuration:
-                ProjectName: hvgn-backend-codebuild-deploy-dev
+                ProjectName: hvgn-frontend-codebuild-deploy-dev
                 PrimarySource: BuildArtifact
-                EnvironmentVariables: '[{"name":"env","value":"dev","type":"PLAINTEXT"}]'
+                EnvironmentVariables: !Sub
+                  - '[{"name":"env","value":"dev","type":"PLAINTEXT"},{"name":"bucket","value":"${DevelopmentEnvironmentBucket}","type":"PLAINTEXT"}]'
+                  - DevelopmentEnvironmentBucket: !Ref DevelopmentEnvironmentBucket
               RunOrder: 1
         - Name: prod-approval
           Actions:
@@ -85,11 +93,11 @@ Resources:
                 Version: '1'
                 Provider: Manual
               Configuration:
-                CustomData: "Please review the HVGN backend"
+                CustomData: "Please review the HVGN frontend"
               RunOrder: 1
-        - Name: hvgn-backend-prod-deploy
+        - Name: hvgn-frontend-prod-deploy
           Actions:
-            - Name: hvgn-backend-prod-deploy
+            - Name: hvgn-frontend-prod-deploy
               ActionTypeId:
                 Category: Build
                 Owner: AWS
@@ -98,9 +106,11 @@ Resources:
               InputArtifacts:
                 - Name: BuildArtifact
               Configuration:
-                ProjectName: hvgn-backend-codebuild-deploy-prod
+                ProjectName: hvgn-frontend-codebuild-deploy-prod
                 PrimarySource: BuildArtifact
-                EnvironmentVariables: '[{"name":"env","value":"prod","type":"PLAINTEXT"}]'
+                EnvironmentVariables: !Sub
+                  - '[{"name":"env","value":"prod","type":"PLAINTEXT"},{"name":"bucket","value":"${ProductionEnvironmentBucket}","type":"PLAINTEXT"}]'
+                  - ProductionEnvironmentBucket: !Ref ProductionEnvironmentBucket
               RunOrder: 1
 
   HvgnBackendBuild:
