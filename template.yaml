@@ -119,7 +119,7 @@ Resources:
         Type: CODEPIPELINE
       Environment:
         ComputeType: BUILD_GENERAL1_SMALL
-        Image: aws/codebuild/standard:3.0
+        Image: aws/codebuild/standard:5.0
         Type: LINUX_CONTAINER
       LogsConfig:
         CloudWatchLogs:
@@ -146,7 +146,7 @@ Resources:
         Type: CODEPIPELINE
       Environment:
         ComputeType: BUILD_GENERAL1_SMALL
-        Image: aws/codebuild/standard:3.0
+        Image: aws/codebuild/standard:5.0
         Type: LINUX_CONTAINER
       LogsConfig:
         CloudWatchLogs:
@@ -173,7 +173,7 @@ Resources:
         Type: CODEPIPELINE
       Environment:
         ComputeType: BUILD_GENERAL1_SMALL
-        Image: aws/codebuild/standard:3.0
+        Image: aws/codebuild/standard:5.0
         Type: LINUX_CONTAINER
       LogsConfig:
         CloudWatchLogs:
@@ -323,7 +323,7 @@ Resources:
                       - ':'
                       - !Ref "AWS::AccountId"
                       - ':'
-                      - !Ref CodeCommitRepository
+                      - !Ref CodeCommitRepositoryName
                   - !Join
                     - ''
                     - - 'arn:aws:logs:'
@@ -379,12 +379,16 @@ Resources:
                     - ''
                     - - 'arn:aws:logs:'
                       - !Ref "AWS::Region"
-                      - '::log-group:/aws/codebuild/hvgn-frontend-codebuild-deploy-dev'
+                      - ':'
+                      - !Ref "AWS::AccountId"
+                      - ':log-group:/aws/codebuild/hvgn-frontend-codebuild-deploy-dev'
                   - !Join
                     - ''
                     - - 'arn:aws:logs:'
                       - !Ref "AWS::Region"
-                      - '::log-group:/aws/codebuild/hvgn-frontend-codebuild-deploy-dev:*'
+                      - ':'
+                      - !Ref "AWS::AccountId"
+                      - ':log-group:/aws/codebuild/hvgn-frontend-codebuild-deploy-dev:*:*'
               - Effect: Allow
                 Action:
                   - 's3:PutObject'
@@ -397,15 +401,11 @@ Resources:
                 Resource:
                   - !Join
                     - ''
-                    - - 'arn:aws:s3:'
-                      - !Ref "AWS::Region"
-                      - '::'
+                    - - 'arn:aws:s3:::'
                       - !Ref PipelineArtifactsBucket
                   - !Join
                     - ''
-                    - - 'arn:aws:s3:'
-                      - !Ref "AWS::Region"
-                      - '::'
+                    - - 'arn:aws:s3:::'
                       - !Ref PipelineArtifactsBucket
                       - '/*'
               - Effect: Allow
@@ -418,15 +418,11 @@ Resources:
                 Resource:
                   - !Join
                     - ''
-                    - - 'arn:aws:s3:'
-                      - !Ref "AWS::Region"
-                      - '::'
+                    - - 'arn:aws:s3:::'
                       - !Ref DevelopmentEnvironmentBucket
                   - !Join
                     - ''
-                    - - 'arn:aws:s3:'
-                      - !Ref "AWS::Region"
-                      - '::'
+                    - - 'arn:aws:s3:::'
                       - !Ref DevelopmentEnvironmentBucket
                       - '/*'
               - Effect: Allow
@@ -483,12 +479,16 @@ Resources:
                     - ''
                     - - 'arn:aws:logs:'
                       - !Ref "AWS::Region"
-                      - '::log-group:/aws/codebuild/hvgn-frontend-codebuild-deploy-prod'
+                      - ':'
+                      - !Ref "AWS::AccountId"
+                      - ':log-group:/aws/codebuild/hvgn-frontend-codebuild-deploy-prod'
                   - !Join
                     - ''
                     - - 'arn:aws:logs:'
                       - !Ref "AWS::Region"
-                      - '::log-group:/aws/codebuild/hvgn-frontend-codebuild-deploy-prod:*'
+                      - ':'
+                      - !Ref "AWS::AccountId"
+                      - ':log-group:/aws/codebuild/hvgn-frontend-codebuild-deploy-prod:*:*'
               - Effect: Allow
                 Action:
                   - 's3:PutObject'
@@ -501,15 +501,11 @@ Resources:
                 Resource:
                   - !Join
                     - ''
-                    - - 'arn:aws:s3:'
-                      - !Ref "AWS::Region"
-                      - '::'
+                    - - 'arn:aws:s3:::'
                       - !Ref PipelineArtifactsBucket
                   - !Join
                     - ''
-                    - - 'arn:aws:s3:'
-                      - !Ref "AWS::Region"
-                      - '::'
+                    - - 'arn:aws:s3:::'
                       - !Ref PipelineArtifactsBucket
                       - '/*'
               - Effect: Allow
@@ -522,15 +518,11 @@ Resources:
                 Resource:
                   - !Join
                     - ''
-                    - - 'arn:aws:s3:'
-                      - !Ref "AWS::Region"
-                      - '::'
+                    - - 'arn:aws:s3:::'
                       - !Ref ProductionEnvironmentBucket
                   - !Join
                     - ''
-                    - - 'arn:aws:s3:'
-                      - !Ref "AWS::Region"
-                      - '::'
+                    - - 'arn:aws:s3:::'
                       - !Ref ProductionEnvironmentBucket
                       - '/*'
               - Effect: Allow
