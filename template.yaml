@@ -14,6 +14,10 @@ Parameters:
   ProductionEnvironmentBucket:
     Description: Bucket name to store production frontend application artifacts
     Type: String
+  CognitoDevName:
+    Description: Name (not userpool id) of Cognito User Pool for development
+    Type: String
+
 
 Resources:
   HvgnFrontendPipeline:
@@ -60,6 +64,9 @@ Resources:
               Configuration:
                 ProjectName: hvgn-frontend
                 PrimarySource: SourceArtifact
+                EnvironmentVariables: !Sub
+                  - '[{"name":"cognitoDevName","value":"${CognitoDevName}","type":"PLAINTEXT"},{"name":"pathToDevEnvFile","value":"./src/environments/environment.ts","type":"PLAINTEXT"}]'
+                  - CognitoDevName: !Ref CognitoDevName
               RunOrder: 1
         - Name: hvgn-frontend-dev-deploy
           Actions:
@@ -349,6 +356,12 @@ Resources:
                     - - 'arn:aws:s3:::'
                       - !Ref PipelineArtifactsBucket
                       - '/*'
+              - Effect: Allow
+                Action:
+                  - 'cognito-idp:ListUserPools'
+                  - 'cognito-idp:ListUserPoolClients'
+                Resource: '*'
+                
 
   HvgnFrontendBuildDeployDevServiceRole:
     Type: AWS::IAM::Role
