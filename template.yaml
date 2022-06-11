@@ -17,6 +17,9 @@ Parameters:
   CognitoDevName:
     Description: Name (not userpool id) of Cognito User Pool for development
     Type: String
+  CognitoProdName:
+    Description: Name (not userpool id) of Cognito User Pool for production
+    Type: String
 
 
 Resources:
@@ -65,7 +68,7 @@ Resources:
                 ProjectName: hvgn-frontend
                 PrimarySource: SourceArtifact
                 EnvironmentVariables: !Sub
-                  - '[{"name":"cognitoDevName","value":"${CognitoDevName}","type":"PLAINTEXT"},{"name":"pathToDevEnvFile","value":"./src/environments/environment.ts","type":"PLAINTEXT"}]'
+                  - '[{"name":"cognitoDevName","value":"${CognitoDevName}","type":"PLAINTEXT"},{"name":"pathToDevEnvFile","value":"./src/environments/environment.ts","type":"PLAINTEXT"},{"name":"cognitoProdName","value":"${CognitoProdName}","type":"PLAINTEXT"},{"name":"pathToProdEnvFile","value":"./src/environments/environment.prod.ts","type":"PLAINTEXT"}]'
                   - CognitoDevName: !Ref CognitoDevName
               RunOrder: 1
         - Name: hvgn-frontend-dev-deploy
